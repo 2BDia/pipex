@@ -1,33 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.h                                            :+:      :+:    :+:   */
+/*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/08/02 13:06:17 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/02 17:28:21 by rvan-aud         ###   ########.fr       */
+/*   Created: 2021/08/02 16:30:25 by rvan-aud          #+#    #+#             */
+/*   Updated: 2021/08/02 17:28:16 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef PIPEX_H
-# define PIPEX_H
+#include "pipex.h"
 
-# include <stdlib.h>
-# include <unistd.h>
-# include <fcntl.h>
-# include "libft.h"
-
-# include <stdio.h> //to remove
-
-typedef struct s_params
+void	free_arrays(char **cmd)
 {
-	char	*infile;
-	char	*outfile;
-	char	*cmd1;
-	char	*cmd2;
-}	t_params;
+	int	i;
 
-void	free_arrays(char **cmd);
-
-#endif
+	i = 0;
+	while (cmd[i])
+		free(cmd[i++]);
+	free(cmd);
+}
