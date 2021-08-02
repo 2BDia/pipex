@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/02 17:29:42 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/02 17:53:46 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,26 @@ static char	*cut_cmd_flags(char **argv, char **cmd)
 	return (str);
 }
 
+static char	*add_forw_slash(char *str)
+{
+	char	*tmp;
+	int		i;
+
+	i = 0;
+	tmp = ft_strdup(str);
+	free(str);
+	str = (char *)malloc(sizeof(char) * (ft_strlen(tmp) + 2));
+	while (tmp[i])
+	{
+		str[i] = tmp[i];
+		i++;
+	}
+	str[i++] = '/';
+	str[i] = '\0';
+	free(tmp);
+	return (str);
+}
+
 static char	**split_paths(char *env)
 {
 	char	**path;
@@ -63,15 +83,25 @@ static char	**split_paths(char *env)
 		path[0][i++] = tmp[j++];
 	path[0][i] = '\0';
 	free(tmp);
+	i = 0;
+	while (path[i])
+	{
+		tmp = ft_strdup(path[i]);
+		free(path[i]);
+		path[i] = add_forw_slash(tmp);
+		i++;
+	}
 	return (path);
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	int			ret;
 	char		**cmd;
 	char		**path;
+	char		*tmp;
+	int			i;
 
+	i = 0;
 	if (argc != 5)
 		return (0);
 	cmd = (char **)malloc(sizeof(char *) * 3);
@@ -80,13 +110,17 @@ int	main(int argc, char **argv, char **env)
 	// 	error free etc
 	cmd[2] = NULL;
 	path = split_paths(env[6]); //to do : trouver la ligne de PATH=
-	// if (fork() == 0) //Child
-	// {
-	// 	while (execve(*cmd, cmd, env) == -1)
-	// 	{
-			
-	// 	}
-	// }
+	tmp = ft_strdup(cmd[0]);
+	if (fork() == 0) //Child
+	{
+		while (execve(*cmd, cmd, env) == -1)
+		{
+			free(cmd[0]);
+			cmd[0] = ft_strjoin(path[i], tmp);
+			i++;
+		}
+	}
+	free(tmp);
 	free_arrays(cmd);
 	free_arrays(path);
 	system("leaks a.out");
