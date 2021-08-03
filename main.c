@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/02 17:53:46 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/03 14:18:14 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,19 +20,19 @@ static char	*cut_cmd_flags(char **argv, char **cmd)
 
 	len = 0;
 	i = 0;
-	while (argv[2][len] && argv[2][len] != ' ')
+	while (argv[2][len] && !is_space(argv[2][len]))
 		len++;
 	str = (char *)malloc(sizeof(char) * (len + 1));
 	if (!str)
 		return (NULL);
-	while (argv[2][i] && argv[2][i] != ' ')
+	while (argv[2][i] && !is_space(argv[2][i]))
 	{
 		str[i] = argv[2][i];
 		i++;
 	}
 	str[i] = '\0';
 	i--;
-	while (argv[2][++i] == ' ')
+	while (is_space(argv[2][++i]))
 		len++;
 	while (argv[2][len])
 		len++;
@@ -43,55 +43,51 @@ static char	*cut_cmd_flags(char **argv, char **cmd)
 	while (argv[2][i])
 		cmd[1][len++] = argv[2][i++];
 	cmd[1][i] = '\0';
+	if (ft_strlen(cmd[1]) == 0)
+	{
+		free(cmd[1]);
+		cmd[1] = NULL;
+	}
 	return (str);
 }
 
-static char	*add_forw_slash(char *str)
+static void	cut_flags_args(char **cmd)
 {
-	char	*tmp;
 	int		i;
+	int		len;
+	char	*tmp;
 
 	i = 0;
-	tmp = ft_strdup(str);
-	free(str);
-	str = (char *)malloc(sizeof(char) * (ft_strlen(tmp) + 2));
-	while (tmp[i])
+	len = 0;
+	while (cmd[1][len] && cmd[1][len] == '-')
 	{
-		str[i] = tmp[i];
-		i++;
+		while (cmd[1][len] && !is_space(cmd[1][len]))
+			len++;
+		while (is_space(cmd[1][len]))
+			len++;
+		if (cmd[1][len] == '-')
+			continue ;
+		if (!cmd[1][len])
+			return ;
+		else
+		{
+			tmp = ft_strdup(cmd[1]);
+			free(cmd[1]);
+			cmd[1] = (char *)malloc(sizeof(char) * (len + 1));
+			while (i < len)
+			{
+				cmd[1][i] = tmp[i];
+				i++;
+			}
+			cmd[1][i] = '\0';
+			free(tmp);
+		}
 	}
-	str[i++] = '/';
-	str[i] = '\0';
-	free(tmp);
-	return (str);
 }
 
-static char	**split_paths(char *env)
+static int	count_args()
 {
-	char	**path;
-	char	*tmp;
-	int		i;
-	int		j;
-
-	i = 0;
-	j = 5;
-	path = ft_split(env, ':');
-	tmp = ft_strdup(path[0]);
-	free(path[0]);
-	path[0] = (char *)malloc(sizeof(char) * ((ft_strlen(tmp) - 5) + 1));
-	while (tmp[j])
-		path[0][i++] = tmp[j++];
-	path[0][i] = '\0';
-	free(tmp);
-	i = 0;
-	while (path[i])
-	{
-		tmp = ft_strdup(path[i]);
-		free(path[i]);
-		path[i] = add_forw_slash(tmp);
-		i++;
-	}
-	return (path);
+	
 }
 
 int	main(int argc, char **argv, char **env)
@@ -104,12 +100,17 @@ int	main(int argc, char **argv, char **env)
 	i = 0;
 	if (argc != 5)
 		return (0);
-	cmd = (char **)malloc(sizeof(char *) * 3);
+		
+	cmd = (char **)malloc(sizeof(char *) * 4);
 	cmd[0] = cut_cmd_flags(argv, cmd);
 	// if (!cmd[0])
 	// 	error free etc
+	cut_flags_args(cmd);
 	cmd[2] = NULL;
-	path = split_paths(env[6]); //to do : trouver la ligne de PATH=
+	cmd[3] = NULL;
+	printf("cmd[0]=%s\n", cmd[0]);
+	printf("cmd[1]=%s\n", cmd[1]);
+	path = split_paths(env);
 	tmp = ft_strdup(cmd[0]);
 	if (fork() == 0) //Child
 	{
@@ -123,7 +124,7 @@ int	main(int argc, char **argv, char **env)
 	free(tmp);
 	free_arrays(cmd);
 	free_arrays(path);
-	system("leaks a.out");
+	// system("leaks pipex");
 	return (0);
 }
 
