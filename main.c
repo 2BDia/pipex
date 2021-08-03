@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/03 15:39:52 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/03 16:35:17 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ static char	*cut_cmd_flags(char **argv, char **cmd)
 
 	len = 0;
 	i = 0;
+	
 	while (argv[2][len] && !is_space(argv[2][len]))
 		len++;
 	str = (char *)malloc(sizeof(char) * (len + 1));
@@ -76,6 +77,8 @@ static int	cut_flags_args(char **cmd)
 				i++;
 			}
 			cmd[n] = (char *)malloc(sizeof(char) * (len + 1));
+			if (!cmd[n])
+				return (-1);
 			len = 0;
 			while (!is_space(tmp[icpy]) && tmp[icpy])
 				cmd[n][len++] = tmp[icpy++];
@@ -116,19 +119,21 @@ int	main(int argc, char **argv, char **env)
 	i = 0;
 	if (argc != 5)
 		return (0);
-	cmd = (char **)malloc(sizeof(char *) * count_args(argv[2]) + 1);
+	cmd = (char **)malloc(sizeof(char *) * (count_args(argv[2]) + 1));
 	cmd[0] = cut_cmd_flags(argv, cmd);
 	// if (!cmd[0])
 	// 	error free etc
 	if (cmd[1])
 	{
 		n = cut_flags_args(cmd);
+		// if (n == -1)
+		// 	error free etc
 		cmd[n] = NULL;
 	}
-	printf("cmd[0]=%s\n", cmd[0]);
-	printf("cmd[1]=%s\n", cmd[1]);
-	printf("cmd[2]=%s\n", cmd[2]);
-	printf("cmd[3]=%s\n", cmd[3]);
+	// printf("cmd[0]=%s\n", cmd[0]);
+	// printf("cmd[1]=%s\n", cmd[1]);
+	// printf("cmd[2]=%s\n", cmd[2]);
+	// printf("cmd[3]=%s\n", cmd[3]);
 	path = split_paths(env);
 	tmp = ft_strdup(cmd[0]);
 	if (fork() == 0) //Child
