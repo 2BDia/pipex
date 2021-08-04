@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/04 13:44:07 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/04 15:50:48 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,28 +108,6 @@ static int	count_args(char *arg)
 	return (count);
 }
 
-static void	child(char **cmd1, char **path, char **env, char **argv)
-{
-	char	*tmp;
-	int		i;
-	int		fd;
-
-	i = 0;
-	fd = open(argv[1], O_RDONLY);
-	if (dup2(fd, STDIN_FILENO) == 1)
-		write(1, "dup2 failed\n", 12); //close free etc
-	tmp = ft_strdup(cmd1[0]);
-	while (execve(*cmd1, cmd1, env) == -1)
-	{
-		free(cmd1[0]);
-		cmd1[0] = ft_strjoin(path[i], tmp);
-		i++;
-	}
-	close(fd);
-	close(0);
-	free(tmp);
-}
-
 static char	**parse_cmd(char **argv, int mod)
 {
 	char	**cmd;
@@ -146,34 +124,104 @@ static char	**parse_cmd(char **argv, int mod)
 		// 	error free etc
 		cmd[n] = NULL;
 	}
-	printf("cmd[0]=%s\n", cmd[0]);
-	printf("cmd[1]=%s\n", cmd[1]);
-	printf("cmd[2]=%s\n", cmd[2]);
-	printf("cmd[3]=%s\n", cmd[3]);
+	// printf("cmd[0]=%s\n", cmd[0]);
+	// printf("cmd[1]=%s\n", cmd[1]);
+	// printf("cmd[2]=%s\n", cmd[2]);
+	// printf("cmd[3]=%s\n", cmd[3]);
 	return (cmd);
+}
+
+static void	child(char **cmd1, char **env, char **argv, int *pipefd)
+{
+	char	*tmp;
+	int		i;
+	int		fd;
+	char	**path;
+
+	i = 0;
+	path = split_paths(env);
+	fd = open(argv[1], O_RDONLY);
+	if (dup2(fd, STDIN_FILENO) == -1)
+		write(1, "dup2 failed\n", 12); //close free etc
+	if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+		write(1, "dup2 failed\n", 12); //close free etc
+	tmp = ft_strdup(cmd1[0]);
+	while (execve(*cmd1, cmd1, env) == -1)
+	{
+		free(cmd1[0]);
+		cmd1[0] = ft_strjoin(path[i], tmp);
+		i++;
+	}
+	close(fd);
+	close(0);
+	free(tmp);
+	free_arrays(path);
+}
+
+static void	piped(char **cmd2, char **env, char **argv, int *pipefd)
+{
+	char	*tmp;
+	int		i;
+	int		fd;
+	char	**path;
+
+	i = 0;
+	path = split_paths(env);
+	fd = open(argv[4], O_RDWR | O_CREAT | O_TRUNC);
+	if (dup2(pipefd[0], STDIN_FILENO) == -1)
+		write(1, "dup2 failed\n", 12); //close free etc
+	// if (dup2(fd, STDOUT_FILENO) == -1)
+	// 	write(1, "dup2 failed\n", 12); //close free etc
+	tmp = ft_strdup(cmd2[0]);
+	while (execve(*cmd2, cmd2, env) == -1)
+	{
+		free(cmd2[0]);
+		cmd2[0] = ft_strjoin(path[i], tmp);
+		i++;
+	}
+	write(1, "oof\n", 4);
+	// close(fd);
+	close(0);
+	free(tmp);
+	free_arrays(path);
 }
 
 int	main(int argc, char **argv, char **env)
 {
 	char		**cmd1;
 	char		**cmd2;
-	char		**path;
+	int			pid;
+	int			pipefd[2];
+	// char	buffer[80];
 
 	if (argc != 5)
 		return (0);
 	cmd1 = parse_cmd(argv, 2);
 	cmd2 = parse_cmd(argv, 3);
-	path = split_paths(env);
-	if (fork() == 0) //Child
+	if (pipe(pipefd) == -1)
+		write(1, "pipe failed\n", 12); //close free etc
+	pid = fork();
+	if (pid == -1)
+		write(1, "fork failed\n", 12); //close free etc
+	if (pid == 0) //Child
 	{
-		child(cmd1, path, env, argv);
+		child(cmd1, env, argv, pipefd);
 	}
+	pid = fork();
+	if (pid == -1)
+		write(1, "fork failed\n", 12); //close free etc
+	if (pid == 0) //Child
+	{
+		piped(cmd2, env, argv, pipefd);
+	}
+	// read(pipefd[0], buffer, 80);
+	// printf("buffer=%s\n", buffer);
 	free_arrays(cmd1);
 	free_arrays(cmd2);
-	free_arrays(path);
-	system("leaks pipex");
+	// system("leaks pipex");
 	return (0);
 }
+
 
 
 
