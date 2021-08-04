@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/04 15:50:48 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/04 17:13:09 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,14 +164,19 @@ static void	piped(char **cmd2, char **env, char **argv, int *pipefd)
 	int		i;
 	int		fd;
 	char	**path;
+	char	buffer[80];
 
 	i = 0;
 	path = split_paths(env);
 	fd = open(argv[4], O_RDWR | O_CREAT | O_TRUNC);
+	printf("fd=%d\n", fd);
 	if (dup2(pipefd[0], STDIN_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
-	// if (dup2(fd, STDOUT_FILENO) == -1)
-	// 	write(1, "dup2 failed\n", 12); //close free etc
+	if (dup2(fd, STDOUT_FILENO) == -1)
+		write(1, "dup2 failed\n", 12); //close free etc
+	close(fd);
+	read(pipefd[0], buffer, 80);
+	printf("buffer=%s", buffer);
 	tmp = ft_strdup(cmd2[0]);
 	while (execve(*cmd2, cmd2, env) == -1)
 	{
@@ -180,7 +185,6 @@ static void	piped(char **cmd2, char **env, char **argv, int *pipefd)
 		i++;
 	}
 	write(1, "oof\n", 4);
-	// close(fd);
 	close(0);
 	free(tmp);
 	free_arrays(path);
@@ -210,6 +214,7 @@ int	main(int argc, char **argv, char **env)
 	pid = fork();
 	if (pid == -1)
 		write(1, "fork failed\n", 12); //close free etc
+	wait(NULL);
 	if (pid == 0) //Child
 	{
 		piped(cmd2, env, argv, pipefd);
