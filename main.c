@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/04 17:13:09 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/10 15:18:13 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,98 +131,79 @@ static char	**parse_cmd(char **argv, int mod)
 	return (cmd);
 }
 
-static void	child(char **cmd1, char **env, char **argv, int *pipefd)
+static void	exec_cmd(char **cmd, char **env, char **path)
 {
 	char	*tmp;
 	int		i;
-	int		fd;
-	char	**path;
 
+	tmp = ft_strdup(*cmd);
 	i = 0;
-	path = split_paths(env);
-	fd = open(argv[1], O_RDONLY);
+	while (execve(*cmd, cmd, env) == -1)
+	{
+		free(*cmd);
+		*cmd = ft_strjoin(path[i], tmp);
+		i++;
+	}
+	printf("execve error\n");
+}
+
+static void	child(char ***cmd, char **env, int *pipefd, char **path)
+{
+	int		fd;
+	(void)pipefd;
+
+	fd = open(*cmd[2], O_RDONLY);
 	if (dup2(fd, STDIN_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
 	if (dup2(pipefd[1], STDOUT_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
-	tmp = ft_strdup(cmd1[0]);
-	while (execve(*cmd1, cmd1, env) == -1)
-	{
-		free(cmd1[0]);
-		cmd1[0] = ft_strjoin(path[i], tmp);
-		i++;
-	}
 	close(fd);
-	close(0);
-	free(tmp);
-	free_arrays(path);
+	exec_cmd(cmd[0], env, path);
 }
 
-static void	piped(char **cmd2, char **env, char **argv, int *pipefd)
+static void	pipex(char ***cmd, char **env, int *pipefd)
 {
-	char	*tmp;
-	int		i;
+	int		pid;
 	int		fd;
 	char	**path;
-	char	buffer[80];
 
-	i = 0;
+	pid = fork();
 	path = split_paths(env);
-	fd = open(argv[4], O_RDWR | O_CREAT | O_TRUNC);
-	printf("fd=%d\n", fd);
+	if (pid == -1)
+		write(1, "fork failed\n", 12); //close free etc
+	if (pid == 0)
+		child(cmd, env, pipefd, path);
+	fd = open(*cmd[3], O_RDWR | O_CREAT | O_TRUNC);
 	if (dup2(pipefd[0], STDIN_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
 	close(fd);
-	read(pipefd[0], buffer, 80);
-	printf("buffer=%s", buffer);
-	tmp = ft_strdup(cmd2[0]);
-	while (execve(*cmd2, cmd2, env) == -1)
-	{
-		free(cmd2[0]);
-		cmd2[0] = ft_strjoin(path[i], tmp);
-		i++;
-	}
-	write(1, "oof\n", 4);
-	close(0);
-	free(tmp);
+	exec_cmd(cmd[1], env, path);
 	free_arrays(path);
 }
 
 int	main(int argc, char **argv, char **env)
 {
-	char		**cmd1;
-	char		**cmd2;
+	char		**cmd[4];
 	int			pid;
 	int			pipefd[2];
-	// char	buffer[80];
 
 	if (argc != 5)
 		return (0);
-	cmd1 = parse_cmd(argv, 2);
-	cmd2 = parse_cmd(argv, 3);
+	cmd[0] = parse_cmd(argv, 2);
+	cmd[1] = parse_cmd(argv, 3);
+	cmd[2] = &argv[1];
+	cmd[3] = &argv[4];
 	if (pipe(pipefd) == -1)
 		write(1, "pipe failed\n", 12); //close free etc
 	pid = fork();
 	if (pid == -1)
 		write(1, "fork failed\n", 12); //close free etc
-	if (pid == 0) //Child
-	{
-		child(cmd1, env, argv, pipefd);
-	}
-	pid = fork();
-	if (pid == -1)
-		write(1, "fork failed\n", 12); //close free etc
-	wait(NULL);
-	if (pid == 0) //Child
-	{
-		piped(cmd2, env, argv, pipefd);
-	}
-	// read(pipefd[0], buffer, 80);
-	// printf("buffer=%s\n", buffer);
-	free_arrays(cmd1);
-	free_arrays(cmd2);
+	if (pid == 0)
+		pipex(cmd, env, pipefd);
+	free_arrays(cmd[0]);
+	free_arrays(cmd[1]);
 	// system("leaks pipex");
 	return (0);
 }
@@ -230,9 +211,98 @@ int	main(int argc, char **argv, char **env)
 
 
 
+// static void	child(char **cmd1, char **env, char **argv, int *pipefd)
+// {
+// 	char	*tmp;
+// 	int		i;
+// 	int		fd;
+// 	char	**path;
 
+// 	i = 0;
+// 	path = split_paths(env);
+// 	fd = open(argv[1], O_RDONLY);
+// 	if (dup2(fd, STDIN_FILENO) == -1)
+// 		write(1, "dup2 failed\n", 12); //close free etc
+// 	if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+// 		write(1, "dup2 failed\n", 12); //close free etc
+// 	close(fd);
+// 	tmp = ft_strdup(cmd1[0]);
+// 	while (execve(*cmd1, cmd1, env) == -1)
+// 	{
+// 		free(cmd1[0]);
+// 		cmd1[0] = ft_strjoin(path[i], tmp);
+// 		i++;
+// 	}
+// 	close(0);
+// 	free(tmp);
+// 	free_arrays(path);
+// }
 
+// static void	piped(char **cmd2, char **env, char **argv, int *pipefd)
+// {
+// 	char	*tmp;
+// 	int		i;
+// 	int		fd;
+// 	char	**path;
 
+// 	i = 0;
+// 	path = split_paths(env);
+// 	fd = open(argv[4], O_RDWR | O_CREAT | O_TRUNC);
+// 	printf("fd=%d\n", fd);
+// 	if (dup2(pipefd[0], STDIN_FILENO) == -1)
+// 		write(1, "dup2 failed\n", 12); //close free etc
+// 	if (dup2(fd, STDOUT_FILENO) == -1)
+// 		write(1, "dup2 failed\n", 12); //close free etc
+// 	// close(fd);
+// 	tmp = ft_strdup(cmd2[0]);
+// 	while (execve(*cmd2, cmd2, env) == -1)
+// 	{
+// 		printf("cmd2=%s\n", *cmd2);
+// 		free(cmd2[0]);
+// 		cmd2[0] = ft_strjoin(path[i], tmp);
+// 		i++;
+// 	}
+// 	write(1, "no\n", 3);
+// 	close(0);
+// 	free(tmp);
+// 	free_arrays(path);
+// }
+
+// int	main(int argc, char **argv, char **env)
+// {
+// 	char		**cmd1;
+// 	char		**cmd2;
+// 	int			pid;
+// 	int			pipefd[2];
+// 	// char	buffer[80];
+
+// 	if (argc != 5)
+// 		return (0);
+// 	cmd1 = parse_cmd(argv, 2);
+// 	cmd2 = parse_cmd(argv, 3);
+// 	if (pipe(pipefd) == -1)
+// 		write(1, "pipe failed\n", 12); //close free etc
+// 	pid = fork();
+// 	if (pid == -1)
+// 		write(1, "fork failed\n", 12); //close free etc
+// 	if (pid == 0) //Child
+// 	{
+// 		child(cmd1, env, argv, pipefd);
+// 	}
+// 	pid = fork();
+// 	if (pid == -1)
+// 		write(1, "fork failed\n", 12); //close free etc
+// 	if (pid == 0) //Child
+// 	{
+// 		piped(cmd2, env, argv, pipefd);
+// 	}
+// 	// read(pipefd[0], buffer, 80);
+// 	// printf("buffer=%s\n", buffer);
+// 	free_arrays(cmd1);
+// 	free_arrays(cmd2);
+// 	// system("leaks pipex");
+// 	return (0);
+// }
 
 
 
