@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:06:17 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/03 14:22:30 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/10 18:59:28 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,13 @@
 // }	t_params;
 
 void	free_arrays(char **cmd);
+void	free_close(char **path, char ***cmd, int *pipefd, int mod);
+void	exit_msg(char **path, char ***cmd, int *pipefd, int mod);
 
 char	**split_paths(char **env);
 
 int		is_space(char c);
+
+char	**parse_cmd(char **argv, int mod);
 
 #endif

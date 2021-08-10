@@ -6,12 +6,13 @@
 #    By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/03 13:31:12 by rvan-aud          #+#    #+#              #
-#    Updated: 2021/08/03 14:13:59 by rvan-aud         ###   ########.fr        #
+#    Updated: 2021/08/10 18:39:58 by rvan-aud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS	= 	main.c			\
 			free.c			\
+			parse_cmd.c		\
 			path_handling.c	\
 			utils.c			\
 
