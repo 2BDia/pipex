@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/10 15:18:13 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/10 15:51:58 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,13 +138,14 @@ static void	exec_cmd(char **cmd, char **env, char **path)
 
 	tmp = ft_strdup(*cmd);
 	i = 0;
-	while (execve(*cmd, cmd, env) == -1)
+	while (execve(*cmd, cmd, env) == -1 && path[i])
 	{
 		free(*cmd);
 		*cmd = ft_strjoin(path[i], tmp);
 		i++;
 	}
 	printf("execve error\n");
+	exit (0);
 }
 
 static void	child(char ***cmd, char **env, int *pipefd, char **path)
@@ -153,11 +154,11 @@ static void	child(char ***cmd, char **env, int *pipefd, char **path)
 	(void)pipefd;
 
 	fd = open(*cmd[2], O_RDONLY);
+	//cas où fd==-1
 	if (dup2(fd, STDIN_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
 	if (dup2(pipefd[1], STDOUT_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
-	close(fd);
 	exec_cmd(cmd[0], env, path);
 }
 
@@ -167,17 +168,21 @@ static void	pipex(char ***cmd, char **env, int *pipefd)
 	int		fd;
 	char	**path;
 
-	pid = fork();
+	
 	path = split_paths(env);
+	pid = fork();
 	if (pid == -1)
 		write(1, "fork failed\n", 12); //close free etc
 	if (pid == 0)
 		child(cmd, env, pipefd, path);
-	fd = open(*cmd[3], O_RDWR | O_CREAT | O_TRUNC);
+	wait(0);
+	fd = open(*cmd[3], O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (dup2(pipefd[0], STDIN_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
 	if (dup2(fd, STDOUT_FILENO) == -1)
 		write(1, "dup2 failed\n", 12); //close free etc
+	close(pipefd[0]);
+	close(pipefd[1]);
 	close(fd);
 	exec_cmd(cmd[1], env, path);
 	free_arrays(path);
@@ -202,9 +207,10 @@ int	main(int argc, char **argv, char **env)
 		write(1, "fork failed\n", 12); //close free etc
 	if (pid == 0)
 		pipex(cmd, env, pipefd);
+	// waitpid(0);
 	free_arrays(cmd[0]);
 	free_arrays(cmd[1]);
-	// system("leaks pipex");
+	system("leaks pipex");
 	return (0);
 }
 
