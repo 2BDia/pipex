@@ -6,15 +6,15 @@
 #    By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/03 13:31:12 by rvan-aud          #+#    #+#              #
-#    Updated: 2021/08/10 18:39:58 by rvan-aud         ###   ########.fr        #
+#    Updated: 2021/08/11 18:36:05 by rvan-aud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS	= 	main.c			\
-			free.c			\
-			parse_cmd.c		\
-			path_handling.c	\
-			utils.c			\
+SRCS	= 	srcs/main.c			\
+			srcs/free.c			\
+			srcs/parse_cmd.c		\
+			srcs/path_handling.c	\
+			srcs/utils.c			\
 
 NAME	= pipex
 
@@ -26,7 +26,7 @@ CFLAGS	= -I includes -Wall -Wextra -Werror
 
 OBJS	= $(SRCS:.c=.o)
 
-LIBFT	= libft.a
+LIBFT	= libft/libft.a
 
 $(NAME):	$(OBJS)
 			@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFT)
