@@ -6,13 +6,13 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/11 13:57:15 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/11 15:13:05 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-static int	exec_cmd(char **cmd, char **env, char **path)
+static void	exec_cmd(char **cmd, char **env, char **path)
 {
 	char	*tmp;
 	int		i;
@@ -26,11 +26,10 @@ static int	exec_cmd(char **cmd, char **env, char **path)
 		if (!*cmd)
 		{
 			free(cmd);
-			return (-1);
+			break ;
 		}
 		i++;
 	}
-	return (-1);
 }
 
 static void	child(char ***cmd, char **env, int *pipefd, char **path)
@@ -51,8 +50,8 @@ static void	child(char ***cmd, char **env, int *pipefd, char **path)
 		exit_msg(path, cmd, pipefd, 3);
 	}
 	close(fd);
-	if (exec_cmd(cmd[0], env, path) == -1)
-		exit_msg(path, cmd, pipefd, 4);
+	exec_cmd(cmd[0], env, path);
+	exit_msg(path, cmd, pipefd, 4);
 }
 
 static void	pipex(char ***cmd, char **env, int *pipefd)
@@ -83,8 +82,8 @@ static void	pipex(char ***cmd, char **env, int *pipefd)
 	}
 	free_close(path, cmd, pipefd, 0);
 	close(fd);
-	if (exec_cmd(cmd[1], env, path) == -1)
-		exit_msg(path, cmd, pipefd, 4);
+	exec_cmd(cmd[1], env, path);
+	exit_msg(path, cmd, pipefd, 4);
 }
 
 int	main(int argc, char **argv, char **env)
