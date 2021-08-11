@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/10 19:11:16 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/11 13:57:15 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,6 @@ static void	child(char ***cmd, char **env, int *pipefd, char **path)
 {
 	int		fd;
 
-
 	fd = open(*cmd[2], O_RDONLY);
 	if (fd == -1)
 		exit_msg(path, cmd, pipefd, 2);
@@ -53,7 +52,7 @@ static void	child(char ***cmd, char **env, int *pipefd, char **path)
 	}
 	close(fd);
 	if (exec_cmd(cmd[0], env, path) == -1)
-		exit_msg(path, cmd, pipefd, -1);
+		exit_msg(path, cmd, pipefd, 4);
 }
 
 static void	pipex(char ***cmd, char **env, int *pipefd)
@@ -84,8 +83,8 @@ static void	pipex(char ***cmd, char **env, int *pipefd)
 	}
 	free_close(path, cmd, pipefd, 0);
 	close(fd);
-	if (exec_cmd(cmd[0], env, path) == -1)
-		exit_msg(path, cmd, pipefd, -1);
+	if (exec_cmd(cmd[1], env, path) == -1)
+		exit_msg(path, cmd, pipefd, 4);
 }
 
 int	main(int argc, char **argv, char **env)
@@ -134,7 +133,6 @@ int	main(int argc, char **argv, char **env)
 	system("leaks pipex");
 	return (0);
 }
-
 
 
 
