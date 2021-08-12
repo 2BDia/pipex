@@ -6,11 +6,17 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 16:30:25 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/11 13:56:05 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/12 14:54:47 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
+
+void	close_err_dup2(int fd, char **path, char ***cmd, int *pipefd)
+{
+	close(fd);
+	exit_msg(path, cmd, pipefd, 3);
+}
 
 void	free_arrays(char **cmd)
 {
@@ -26,7 +32,8 @@ void	free_close(char **path, char ***cmd, int *pipefd, int mod)
 {
 	if (mod == 1)
 	{
-		free_arrays(path);
+		if (path)
+			free_arrays(path);
 		free_arrays(cmd[0]);
 		free_arrays(cmd[1]);
 	}

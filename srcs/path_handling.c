@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/03 13:30:11 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/03 13:30:47 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/12 12:14:18 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,12 @@ static int	check_path_line(char **env)
 	return (i);
 }
 
+static void	init_vars(int *i, int *j)
+{
+	*i = 0;
+	*j = 5;
+}
+
 char	**split_paths(char **env)
 {
 	char	**path;
@@ -50,8 +56,7 @@ char	**split_paths(char **env)
 	int		j;
 	int		p_line;
 
-	i = 0;
-	j = 5;
+	init_vars(&i, &j);
 	p_line = check_path_line(env);
 	path = ft_split(env[p_line], ':');
 	tmp = ft_strdup(path[0]);
