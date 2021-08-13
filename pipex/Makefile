@@ -6,7 +6,7 @@
 #    By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/03 13:31:12 by rvan-aud          #+#    #+#              #
-#    Updated: 2021/08/12 14:44:46 by rvan-aud         ###   ########.fr        #
+#    Updated: 2021/08/13 14:09:07 by rvan-aud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,11 +31,13 @@ OBJS	= $(SRCS:.c=.o)
 LIBFT	= libft/libft.a
 
 $(NAME):	$(OBJS)
+			@$(MAKE) -C ./libft
 			@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) $(LIBFT)
 
 all:		$(NAME)
 
 clean:
+			@$(MAKE) -C libft fclean
 			$(RM) $(OBJS)
 
 fclean:		clean
