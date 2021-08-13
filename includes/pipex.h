@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:06:17 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/12 14:59:10 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/13 14:49:21 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
-# include "libft.h"
 
 /*
 ** cut_cmd.c
@@ -31,6 +30,11 @@ void	close_err_dup2(int fd, char **path, char ***cmd, int *pipefd);
 void	free_arrays(char **cmd);
 void	free_close(char **path, char ***cmd, int *pipefd, int mod);
 void	exit_msg(char **path, char ***cmd, int *pipefd, int mod);
+
+/*
+** ft_split.c
+*/
+char	**ft_split(char const *s, char c);
 
 /*
 ** parse_cmd.c
@@ -51,5 +55,9 @@ void	pipex(char ***cmd, char **env, int *pipefd);
 ** utils.c
 */
 int		is_space(char c);
+char	*ft_strdup(const char *s);
+char	*ft_strjoin(char const *s1, char const *s2);
+size_t	ft_strlen(const char *s);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
 
 #endif

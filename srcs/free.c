@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 16:30:25 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/12 14:54:47 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/13 14:50:21 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,9 +47,9 @@ void	exit_msg(char **path, char ***cmd, int *pipefd, int mod)
 	if (mod == 0)
 		write(1, "Error : fork failed\n", 20);
 	else if (mod == 1)
-		write(1, "Error : file 2 opening failed\n", 30);
+		write(1, "Error : outfile opening failed\n", 30);
 	else if (mod == 2)
-		write(1, "Error : file 1 opening failed\n", 30);
+		write(1, "Error : infile opening failed\n", 30);
 	else if (mod == 3)
 		write(1, "Error : dup2 failed\n", 20);
 	else if (mod == 4)

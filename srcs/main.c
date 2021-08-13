@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/12 14:55:18 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/13 14:50:58 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	errors_main(char ***cmd, int mod)
 	if (mod == 2)
 		free(cmd[0]);
 	else if (mod == 3)
-		write(1, "Error : arguments count not valid\n", 34);
+		write(1, "Error : invalid arguments count\n", 32);
 	else
 	{
 		free_arrays(cmd[0]);
