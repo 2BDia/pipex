@@ -6,33 +6,15 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 17:20:51 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 17:38:17 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
 
-static int	errors_main(char ***cmd, int mod)
-{
-	if (mod == 2)
-		free(cmd[0]);
-	else
-	{
-		free_arrays(cmd[0]);
-		free_arrays(cmd[1]);
-		if (mod == 0)
-			write(1, "Error : pipe failed\n", 20);
-		else if (mod == 1)
-			write(1, "Error : fork failed\n", 20);
-	}
-	return (0);
-}
-
 int	main(int argc, char **argv, char **env)
 {
 	char	***cmd;
-	int		pid;
-	int		pipefd[2];
 	int		n;
 	t_vars	vars;
 
@@ -52,17 +34,8 @@ int	main(int argc, char **argv, char **env)
 	cmd[n] = NULL;
 	vars.n = n;
 	vars.env = env;
-	if (pipe(pipefd) == -1)
-		return (errors_main(cmd, 0));
-	pid = fork();
-	if (pid == -1)
-		return (errors_main(cmd, 1));
-	if (pid == 0)
-		pipex(cmd, pipefd, vars);
-	close(pipefd[0]);
-	close(pipefd[1]);
-	wait(0);
-	free_close(NULL, cmd, pipefd, 1);
-	// system("leaks pipex");
+	pipex(cmd, vars);
+	free_close(NULL, cmd, NULL, 2);
+	system("leaks pipex");
 	return (0);
 }

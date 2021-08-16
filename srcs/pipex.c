@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/12 14:44:22 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 17:24:30 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 17:37:52 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ static void	exec_cmd(char **cmd, char **env, char **path)
 
 static void	first(char ***cmd, int *pipefd, char **path, t_vars vars)
 {
-	int		fd;
+	int	fd;
 
 	fd = open(*cmd[vars.n - 2], O_RDONLY);
 	if (fd == -1)
@@ -78,33 +78,10 @@ static void	first(char ***cmd, int *pipefd, char **path, t_vars vars)
 	exit_msg(path, cmd, pipefd, 4);
 }
 
-void	pipex(char ***cmd, int *pipefd, t_vars vars)
+static void	last(char ***cmd, int *pipefd, char **path, t_vars vars)
 {
-	int		pid1;
-	int		pid2;
-	int		fd;
-	char	**path;
-	// int		i;
+	int	fd;
 
-	path = split_paths(vars.env);
-	pid1 = fork();
-	if (pid1 == -1)
-		exit_msg(path, cmd, pipefd, 0);
-	if (pid1 == 0)
-		first(cmd, pipefd, path, vars);
-	wait(0);
-	// write(1, "ok1\n", 4);
-	// prep_middle(cmd, pipefd, path, vars);
-	// i = 0;
-	// while (i < vars.n - 3)
-	// {
-	// 	pid = fork();
-	// 	if (pid == -1)
-	// 		exit_msg(path, cmd, pipefd, 0);
-	// 	if (pid == 0)
-	// 		middle(cmd, pipefd, path, vars);
-	// 	i++;
-	// }
 	fd = open(*cmd[vars.n - 1], O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (fd == -1)
 		exit_msg(path, cmd, pipefd, 1);
@@ -114,6 +91,34 @@ void	pipex(char ***cmd, int *pipefd, t_vars vars)
 		close_err_dup2(fd, path, cmd, pipefd);
 	free_close(path, cmd, pipefd, 0);
 	close(fd);
+	close(pipefd[1]);
 	exec_cmd(cmd[vars.n - 3], vars.env, path);
 	exit_msg(path, cmd, pipefd, 4);
+}
+
+int	pipex(char ***cmd, t_vars vars)
+{
+	int		pid1;
+	int		pid2;
+	int		pipefd[2];
+	char	**path;
+
+	path = split_paths(vars.env);
+	if (pipe(pipefd) == -1)
+		return (errors_main(cmd, 0));
+	pid1 = fork();
+	if (pid1 == -1)
+		return (errors_main(cmd, 1));
+	if (pid1 == 0)
+		first(cmd, pipefd, path, vars);
+	pid2 = fork();
+	if (pid2 == -1)
+		return (errors_main(cmd, 1));
+	if (pid2 == 0)
+		last(cmd, pipefd, path, vars);
+	close(pipefd[0]);
+	close(pipefd[1]);
+	wait(0);
+	wait(0);
+	return (0);
 }
