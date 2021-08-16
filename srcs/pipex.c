@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/12 14:44:22 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 17:37:52 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 17:44:42 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,8 +116,7 @@ int	pipex(char ***cmd, t_vars vars)
 		return (errors_main(cmd, 1));
 	if (pid2 == 0)
 		last(cmd, pipefd, path, vars);
-	close(pipefd[0]);
-	close(pipefd[1]);
+	free_close(path, cmd, pipefd, 1);
 	wait(0);
 	wait(0);
 	return (0);

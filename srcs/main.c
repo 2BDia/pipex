@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 17:38:17 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 17:46:29 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ int	main(int argc, char **argv, char **env)
 	while (n < argc - 3)
 	{
 		cmd[n] = parse_cmd(argv, n + 2);
-		// printf("cmd[%d][0]=%s\n", n, cmd[n][0]);
-		// printf("cmd[%d][0]=%s\n", n, cmd[n][1]);
 		if (!cmd[n])
 			return (errors_main(cmd, 2));
 		n++;
@@ -35,7 +33,6 @@ int	main(int argc, char **argv, char **env)
 	vars.n = n;
 	vars.env = env;
 	pipex(cmd, vars);
-	free_close(NULL, cmd, NULL, 2);
 	system("leaks pipex");
 	return (0);
 }
