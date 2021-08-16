@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/12 14:44:22 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 17:44:42 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 18:49:29 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,11 +96,39 @@ static void	last(char ***cmd, int *pipefd, char **path, t_vars vars)
 	exit_msg(path, cmd, pipefd, 4);
 }
 
+static void	middle_fork(char ***cmd, char **path, t_vars vars, int *pipe1, int *pipe2)
+{
+	if (dup2(pipe1[0], STDIN_FILENO) == -1)
+		close_err_dup2(-1, path, cmd, pipe2);
+	if (dup2(pipe2[1], STDOUT_FILENO) == -1)
+		close_err_dup2(-1, path, cmd, pipe2);
+	close(pipe1[1]);
+	close(pipe2[0]);
+	exec_cmd(cmd[1], vars.env, path);
+	exit_msg(path, cmd, pipe2, 4);
+}
+
+static int	*middle(char ***cmd, t_vars vars, int *pipe1, char **path)
+{
+	int	pipe2[2];
+	int	pid;
+
+	if (pipe(pipe2) == -1)
+		return (errors_middle(cmd, 0));
+	pid = fork();
+	if (pid == -1)
+		return (errors_middle(cmd, 1));
+	if (pid == 0)
+		middle_fork(cmd, path, vars, pipe1, pipe2);
+	return (pipe2);
+}
+
 int	pipex(char ***cmd, t_vars vars)
 {
 	int		pid1;
 	int		pid2;
 	int		pipefd[2];
+	int		*pipe2;
 	char	**path;
 
 	path = split_paths(vars.env);
@@ -111,12 +139,18 @@ int	pipex(char ***cmd, t_vars vars)
 		return (errors_main(cmd, 1));
 	if (pid1 == 0)
 		first(cmd, pipefd, path, vars);
+	pipe2 = middle(cmd, vars, pipefd, path);
+	if (!pipe2)
+		return (0);
 	pid2 = fork();
 	if (pid2 == -1)
 		return (errors_main(cmd, 1));
 	if (pid2 == 0)
-		last(cmd, pipefd, path, vars);
+		last(cmd, pipe2, path, vars);
 	free_close(path, cmd, pipefd, 1);
+	close(pipe2[0]);
+	close(pipe2[1]);
+	wait(0);
 	wait(0);
 	wait(0);
 	return (0);

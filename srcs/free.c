@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 16:30:25 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 17:37:13 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 18:43:45 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,17 @@ int	errors_main(char ***cmd, int mod)
 			write(1, "Error : fork failed\n", 20);
 	}
 	return (0);
+}
+
+int	*errors_middle(char ***cmd, int mod)
+{
+	free_arrays(cmd[0]);
+	free_arrays(cmd[1]);
+	if (mod == 0)
+		write(1, "Error : pipe failed\n", 20);
+	else if (mod == 1)
+		write(1, "Error : fork failed\n", 20);
+	return (NULL);
 }
 
 void	close_err_dup2(int fd, char **path, char ***cmd, int *pipefd)
