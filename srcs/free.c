@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 16:30:25 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 13:33:24 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 14:51:22 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 void	close_err_dup2(int fd, char **path, char ***cmd, int *pipefd)
 {
-	close(fd);
+	if (fd != -1)
+		close(fd);
 	exit_msg(path, cmd, pipefd, 3);
 }
 

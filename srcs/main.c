@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 14:03:01 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 15:02:03 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@ static int	errors_main(char ***cmd, int mod)
 {
 	if (mod == 2)
 		free(cmd[0]);
-	else if (mod == 3)
-		write(1, "Error : invalid arguments count\n", 32);
 	else
 	{
 		free_arrays(cmd[0]);
@@ -36,6 +34,7 @@ int	main(int argc, char **argv, char **env)
 	int		pid;
 	int		pipefd[2];
 	int		n;
+	t_vars	vars;
 
 	cmd = (char ***)malloc(sizeof(char **) * argc);
 	n = 0;
@@ -51,13 +50,15 @@ int	main(int argc, char **argv, char **env)
 	cmd[n++] = &argv[1];
 	cmd[n++] = &argv[argc - 1];
 	cmd[n] = NULL;
+	vars.n = n;
+	vars.env = env;
 	if (pipe(pipefd) == -1)
 		return (errors_main(cmd, 0));
 	pid = fork();
 	if (pid == -1)
 		return (errors_main(cmd, 1));
 	if (pid == 0)
-		pipex(cmd, env, pipefd, n);
+		pipex(cmd, pipefd, vars);
 	write(1, "ok\n", 3);
 	free_close(NULL, cmd, pipefd, 1);
 	system("leaks pipex");
