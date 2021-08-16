@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/13 14:50:58 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 13:35:36 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,20 +32,28 @@ static int	errors_main(char ***cmd, int mod)
 
 int	main(int argc, char **argv, char **env)
 {
-	char		**cmd[4];
-	int			pid;
-	int			pipefd[2];
+	char	***cmd;
+	int		pid;
+	int		pipefd[2];
+	int		n;
 
-	if (argc != 5)
-		return (errors_main(cmd, 3));
-	cmd[0] = parse_cmd(argv, 2);
-	if (!cmd[0])
-		return (0);
-	cmd[1] = parse_cmd(argv, 3);
-	if (!cmd[1])
-		return (errors_main(cmd, 2));
-	cmd[2] = &argv[1];
-	cmd[3] = &argv[4];
+	// cmd = NULL;
+	// if (argc != 5)
+	// 	return (errors_main(cmd, 3));
+	cmd = (char ***)malloc(sizeof(char **) * argc);
+	n = 0;
+	while (n < argc - 3)
+	{
+		cmd[n] = parse_cmd(argv, n + 2);
+		printf("cmd[%d][0]=%s\n", n, cmd[n][0]);
+		printf("cmd[%d][0]=%s\n", n, cmd[n][1]);
+		if (!cmd[n])
+			return (errors_main(cmd, 2));
+		n++;
+	}
+	cmd[n++] = &argv[1];
+	cmd[n++] = &argv[argc - 1];
+	cmd[n] = NULL;
 	if (pipe(pipefd) == -1)
 		return (errors_main(cmd, 0));
 	pid = fork();
@@ -53,6 +61,8 @@ int	main(int argc, char **argv, char **env)
 		return (errors_main(cmd, 1));
 	if (pid == 0)
 		pipex(cmd, env, pipefd);
+	write(1, "ok\n", 3);
 	free_close(NULL, cmd, pipefd, 1);
+	system("leaks pipex");
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 16:30:25 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/13 14:50:21 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 13:33:24 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,18 @@ void	free_arrays(char **cmd)
 
 void	free_close(char **path, char ***cmd, int *pipefd, int mod)
 {
+	int	i;
+
+	i = 0;
 	if (mod == 1)
 	{
 		if (path)
 			free_arrays(path);
-		free_arrays(cmd[0]);
-		free_arrays(cmd[1]);
+		while (cmd[i - 1])
+		{
+			printf("cmd[%d]=%s\n", i, *cmd[i]);
+			free_arrays(cmd[i++]);
+		}
 	}
 	close(pipefd[0]);
 	close(pipefd[1]);
