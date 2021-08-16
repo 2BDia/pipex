@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:06:17 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 13:15:15 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 13:59:25 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ char	**split_paths(char **env);
 /*
 ** pipex.c
 */
-void	pipex(char ***cmd, char **env, int *pipefd);
+void	pipex(char ***cmd, char **env, int *pipefd, int n);
 
 /*
 ** utils.c

@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 13:35:36 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/16 14:03:01 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,16 +37,13 @@ int	main(int argc, char **argv, char **env)
 	int		pipefd[2];
 	int		n;
 
-	// cmd = NULL;
-	// if (argc != 5)
-	// 	return (errors_main(cmd, 3));
 	cmd = (char ***)malloc(sizeof(char **) * argc);
 	n = 0;
 	while (n < argc - 3)
 	{
 		cmd[n] = parse_cmd(argv, n + 2);
-		printf("cmd[%d][0]=%s\n", n, cmd[n][0]);
-		printf("cmd[%d][0]=%s\n", n, cmd[n][1]);
+		// printf("cmd[%d][0]=%s\n", n, cmd[n][0]);
+		// printf("cmd[%d][0]=%s\n", n, cmd[n][1]);
 		if (!cmd[n])
 			return (errors_main(cmd, 2));
 		n++;
@@ -60,7 +57,7 @@ int	main(int argc, char **argv, char **env)
 	if (pid == -1)
 		return (errors_main(cmd, 1));
 	if (pid == 0)
-		pipex(cmd, env, pipefd);
+		pipex(cmd, env, pipefd, n);
 	write(1, "ok\n", 3);
 	free_close(NULL, cmd, pipefd, 1);
 	system("leaks pipex");
