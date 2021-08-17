@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:05:57 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/17 15:22:38 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/17 16:21:02 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@ int	main(int argc, char **argv, char **env)
 	int		n;
 	t_vars	vars;
 
+	cmd = NULL;
+	if (argc < 5)
+		return (errors_main(cmd, 3));
 	cmd = (char ***)malloc(sizeof(char **) * argc);
 	n = 0;
 	while (n < argc - 3)
@@ -33,6 +36,5 @@ int	main(int argc, char **argv, char **env)
 	vars.n = n;
 	vars.env = env;
 	pipex(cmd, vars);
-	// system("leaks pipex");
 	return (0);
 }
