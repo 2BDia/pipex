@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:06:17 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/16 18:43:50 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/17 14:10:02 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ int		cut_flags_args(char **cmd);
 ** free.c
 */
 int		errors_main(char ***cmd, int mod);
-int		*errors_middle(char ***cmd, int mod);
 void	close_err_dup2(int fd, char **path, char ***cmd, int *pipefd);
 void	free_arrays(char **cmd);
 void	free_close(char **path, char ***cmd, int *pipefd, int mod);
