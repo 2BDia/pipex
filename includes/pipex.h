@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:06:17 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/17 14:10:02 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/17 16:48:50 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,11 @@
 # include <unistd.h>
 # include <fcntl.h>
 
-#include <stdio.h> //remove
-
 typedef struct s_vars
 {
 	int		n;
 	char	**env;
+	char	**path;
 }	t_vars;
 
 /*
@@ -30,6 +29,13 @@ typedef struct s_vars
 */
 char	*cut_cmd_flags(char **argv, char **cmd, int mod);
 int		cut_flags_args(char **cmd);
+
+/*
+** fork_functs.c
+*/
+void	first(char ***cmd, int *pipe1, t_vars vars);
+void	last(char ***cmd, int *pipe2, char **path, t_vars vars);
+void	middle_fork(char ***cmd, t_vars vars, int *pipein, int *pipeout, int i);
 
 /*
 ** free.c
@@ -58,7 +64,7 @@ char	**split_paths(char **env);
 /*
 ** pipex.c
 */
-int	pipex(char ***cmd, t_vars vars);
+int		pipex(char ***cmd, t_vars vars, int pid1, int pid2);
 
 /*
 ** utils.c

@@ -6,12 +6,13 @@
 #    By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/08/03 13:31:12 by rvan-aud          #+#    #+#              #
-#    Updated: 2021/08/13 14:49:01 by rvan-aud         ###   ########.fr        #
+#    Updated: 2021/08/17 16:46:58 by rvan-aud         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS	= 	srcs/main.c				\
 			srcs/cut_cmd.c			\
+			srcs/fork_functs.c		\
 			srcs/free.c				\
 			srcs/ft_split.c			\
 			srcs/parse_cmd.c		\
