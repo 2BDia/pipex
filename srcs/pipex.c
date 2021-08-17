@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/12 14:44:22 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/17 14:56:52 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/17 15:10:01 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,7 +117,6 @@ int	pipex(char ***cmd, t_vars vars)
 	while (i < vars.n - 4)
 	{
 		i += 1;
-		printf("i=%d\n", i);
 		if (check == 0)
 		{
 			if (pipe(pipe2) == -1)
@@ -151,13 +150,14 @@ int	pipex(char ***cmd, t_vars vars)
 	{
 		if (pid2 == 0)
 			last(cmd, pipe2, path, vars);
+		free_close(path, cmd, pipe2, 1);
 	}
 	else
 	{
 		if (pid2 == 0)
 			last(cmd, pipe1, path, vars);
+		free_close(path, cmd, pipe1, 1);
 	}
-	free_close(path, cmd, pipe1, 1);
 	wait(0);
 	wait(0);
 	return (0);
