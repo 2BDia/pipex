@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/17 16:32:24 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/17 16:48:35 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/17 16:52:33 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,25 +49,25 @@ void	first(char ***cmd, int *pipe1, t_vars vars)
 	exit_msg(vars.path, cmd, pipe1, 4);
 }
 
-void	last(char ***cmd, int *pipe2, char **path, t_vars vars)
+void	last(char ***cmd, int *pipe2, t_vars vars)
 {
 	int	fd;
 
 	fd = open(*cmd[vars.n - 1], O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (fd == -1)
-		exit_msg(path, cmd, pipe2, 1);
+		exit_msg(vars.path, cmd, pipe2, 1);
 	if (dup2(pipe2[0], STDIN_FILENO) == -1)
-		close_err_dup2(fd, path, cmd, pipe2);
+		close_err_dup2(fd, vars.path, cmd, pipe2);
 	if (dup2(fd, STDOUT_FILENO) == -1)
-		close_err_dup2(fd, path, cmd, pipe2);
-	free_close(path, cmd, pipe2, 0);
+		close_err_dup2(fd, vars.path, cmd, pipe2);
+	free_close(vars.path, cmd, pipe2, 0);
 	close(pipe2[1]);
 	close(fd);
-	exec_cmd(cmd[vars.n - 3], vars.env, path);
-	exit_msg(path, cmd, pipe2, 4);
+	exec_cmd(cmd[vars.n - 3], vars.env, vars.path);
+	exit_msg(vars.path, cmd, pipe2, 4);
 }
 
-void	middle_fork(char ***cmd, t_vars vars, int *pipein, int *pipeout, int i)
+void	middle_fork(char ***cmd, t_vars vars, int *pipein, int *pipeout)
 {
 	if (dup2(pipein[0], STDIN_FILENO) == -1)
 		close_err_dup2(-1, vars.path, cmd, pipeout);
@@ -75,6 +75,6 @@ void	middle_fork(char ***cmd, t_vars vars, int *pipein, int *pipeout, int i)
 		close_err_dup2(-1, vars.path, cmd, pipeout);
 	close(pipein[1]);
 	close(pipeout[0]);
-	exec_cmd(cmd[i], vars.env, vars.path);
+	exec_cmd(cmd[vars.i], vars.env, vars.path);
 	exit_msg(vars.path, cmd, pipeout, 4);
 }

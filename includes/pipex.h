@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:06:17 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/17 16:48:50 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/17 16:52:37 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 typedef struct s_vars
 {
 	int		n;
+	int		i;
 	char	**env;
 	char	**path;
 }	t_vars;
@@ -34,8 +35,8 @@ int		cut_flags_args(char **cmd);
 ** fork_functs.c
 */
 void	first(char ***cmd, int *pipe1, t_vars vars);
-void	last(char ***cmd, int *pipe2, char **path, t_vars vars);
-void	middle_fork(char ***cmd, t_vars vars, int *pipein, int *pipeout, int i);
+void	last(char ***cmd, int *pipe2, t_vars vars);
+void	middle_fork(char ***cmd, t_vars vars, int *pipein, int *pipeout);
 
 /*
 ** free.c
