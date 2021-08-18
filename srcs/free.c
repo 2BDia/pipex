@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 16:30:25 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/17 16:20:32 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/18 17:51:28 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ int	errors_main(char ***cmd, int mod)
 		free(cmd[0]);
 	else if (mod == 3)
 		write(1, "Error : invalid arguments count\n", 32);
+	else if (mod == 4)
+		write(1, "Error : malloc failed\n", 22);
 	else
 	{
 		free_arrays(cmd[0]);
