@@ -6,12 +6,13 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/12 14:44:22 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/20 14:50:25 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/20 15:52:13 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex.h"
-#include <stdio.h>
+
+#include "pipex.h"
 
 static int	middle(char ***cmd, t_vars vars, int *pipein, int *pipeout)
 {
@@ -24,53 +25,37 @@ static int	middle(char ***cmd, t_vars vars, int *pipein, int *pipeout)
 		middle_fork(cmd, vars, pipein, pipeout);
 	close(pipein[0]);
 	close(pipein[1]);
-	close(pipeout[1]);
+	// close(pipeout[1]);
 	return (1);
 }
 
-static int	loop_conditions(char ***cmd, t_vars vars, int (*pipe1)[2], int (*pipe2)[2])
+static int	loop_conditions(char ***cmd, t_vars vars, int *pipe1, int *pipe2)
 {
-	char	buffer[300];
-
-	if (vars.check == 1 || vars.check == 3)
+	if (vars.check == 1)
 	{
-		if (pipe(*pipe2) == -1)
+		if (pipe(pipe2) == -1)
 			return (errors_main(cmd, 0));
 	}
 	else
 	{
-		if (pipe(*pipe1) == -1)
+		if (pipe(pipe1) == -1)
 			return (errors_main(cmd, 0));
 	}
-	if (vars.check == 1 || vars.check == 3)
+	if (vars.check == 1)
 	{
-		// if (vars.check == 3)
-		// {
-		// 	read((*pipe1)[0], buffer, 300);
-		// 	printf("pipe1=%s\n", buffer);
-		// } //viens d'exec cat -e
-		if (!middle(cmd, vars, *pipe1, *pipe2))
+		if (!middle(cmd, vars, pipe1, pipe2))
 			return (0);
-		if (vars.check == 3)
-		{
-			read((*pipe2)[0], buffer, 300);
-			printf("pipe2=%s\n", buffer);
-		} //viens d'exec cat -e
 	}
 	else
 	{
-		// read((*pipe2)[0], buffer, 300);
-		// printf("pipe2=%s\n", buffer);
-		if (!middle(cmd, vars, *pipe2, *pipe1))
+		if (!middle(cmd, vars, pipe2, pipe1))
 			return (0);
 	}
 	return (1);
 }
 
-static int	middle_loop(char ***cmd, t_vars vars, int (*pipe1)[2], int (*pipe2)[2])
+static int	middle_loop(char ***cmd, t_vars vars, int *pipe1, int *pipe2)
 {
-	// char	buffer[300];
-
 	vars.i = 0;
 	vars.check = 1;
 	while (vars.i < vars.n - 4)
@@ -81,11 +66,10 @@ static int	middle_loop(char ***cmd, t_vars vars, int (*pipe1)[2], int (*pipe2)[2
 		if (vars.check == 1)
 			vars.check = 2;
 		else
-			vars.check = 3;
+			vars.check = 1;
 		wait(0);
 	}
-	// read((*pipe2)[0], buffer, 300);
-	// printf("pipe2=%s\n", buffer);
+	//you should call last fork
 	return (vars.check);
 }
 
@@ -101,22 +85,16 @@ int	pipex(char ***cmd, t_vars vars, int pid1, int pid2)
 	int		pipe1[2];
 	int		pipe2[2];
 	int		check;
-	// char	buffer[300];
 
 	vars.path = split_paths(vars.env);
 	if (pipe(pipe1) == -1)
-		return (errors_main(cmd, 0));
-	if (pipe(pipe2) == -1)
 		return (errors_main(cmd, 0));
 	pid1 = fork();
 	if (pid1 == -1)
 		return (errors_main(cmd, 1));
 	if (pid1 == 0)
 		first(cmd, pipe1, vars);
-	wait(0);
-	check = middle_loop(cmd, vars, &pipe1, &pipe2);
-	// read(pipe2[0], buffer, 300);
-	// 	printf("buffer=%s\n", buffer);
+	check = middle_loop(cmd, vars, pipe1, pipe2);
 	if (!check)
 		return (0);
 	pid2 = fork();
@@ -126,6 +104,7 @@ int	pipex(char ***cmd, t_vars vars, int pid1, int pid2)
 		pipex_last_fork(cmd, vars, pipe2, pid2);
 	else
 		pipex_last_fork(cmd, vars, pipe1, pid2);
+	wait(0);
 	wait(0);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/17 16:32:24 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/20 14:38:52 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/20 15:39:14 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ void	first(char ***cmd, int *pipe1, t_vars vars)
 {
 	int	fd;
 
+	// printf("pipe1=%d\n", pipe1[0]);
 	fd = open(*cmd[vars.n - 2], O_RDONLY);
 	if (fd == -1)
 		exit_msg(vars.path, cmd, pipe1, 2);
@@ -53,6 +54,7 @@ void	last(char ***cmd, int *pipe2, t_vars vars)
 {
 	int	fd;
 
+	// printf("pipe2=%d\n", pipe2[0]);
 	fd = open(*cmd[vars.n - 1], O_RDWR | O_CREAT | O_TRUNC, 0666);
 	if (fd == -1)
 		exit_msg(vars.path, cmd, pipe2, 1);
@@ -72,19 +74,17 @@ void	last(char ***cmd, int *pipe2, t_vars vars)
 
 void	middle_fork(char ***cmd, t_vars vars, int *pipein, int *pipeout)
 {
-	// static int	i = 0;
-
+	// printf("pipein=%d\n", pipein[0]);
 	if (dup2(pipein[0], STDIN_FILENO) == -1)
 	{
-		write(2, "ok\n", 3);
+		write(2, "oki\n", 4);
 		close_err_dup2(-1, vars.path, cmd, pipeout);
 	}
 	if (dup2(pipeout[1], STDOUT_FILENO) == -1)
 	{
-		write(2, "ok\n", 3);
+		write(2, "oko\n", 4);
 		close_err_dup2(-1, vars.path, cmd, pipeout);
 	}
-	write(2, "ok\n", 3);
 	close(pipein[1]);
 	close(pipeout[0]);
 	exec_cmd(cmd[vars.i], vars.env, vars.path);
