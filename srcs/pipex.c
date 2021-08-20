@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/12 14:44:22 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/20 15:52:13 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/20 15:57:11 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ static int	middle(char ***cmd, t_vars vars, int *pipein, int *pipeout)
 		middle_fork(cmd, vars, pipein, pipeout);
 	close(pipein[0]);
 	close(pipein[1]);
-	// close(pipeout[1]);
 	return (1);
 }
 
@@ -69,7 +68,6 @@ static int	middle_loop(char ***cmd, t_vars vars, int *pipe1, int *pipe2)
 			vars.check = 1;
 		wait(0);
 	}
-	//you should call last fork
 	return (vars.check);
 }
 
