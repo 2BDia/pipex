@@ -6,7 +6,7 @@
 /*   By: rvan-aud <rvan-aud@student.s19.be>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/08/02 13:06:17 by rvan-aud          #+#    #+#             */
-/*   Updated: 2021/08/20 15:11:34 by rvan-aud         ###   ########.fr       */
+/*   Updated: 2021/08/20 16:11:39 by rvan-aud         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <fcntl.h>
-
-#include <stdio.h>
 
 typedef struct s_vars
 {
